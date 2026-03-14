@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>مخزون الأكواد</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body{
+background:#0b1224;
+color:white;
+font-family:sans-serif;
+}
+
+.box{
+background:#111827;
+border:1px solid #1f2937;
+border-radius:15px;
+padding:20px;
+}
+
+textarea{
+background:#020617;
+border:1px solid #334155;
+border-radius:10px;
+padding:10px;
+width:100%;
+}
+
+button{
+padding:10px 20px;
+border-radius:10px;
+font-weight:bold;
+}
+
+</style>
+</head>
+
+<body class="p-8 flex flex-col items-center gap-6">
+
+<h1 class="text-3xl font-bold text-blue-400">
+مدير مخزون الأكواد
+</h1>
+
+<div class="box w-full max-w-2xl space-y-4">
+
+<h2 class="text-xl">تغذية المخزون</h2>
+
+<textarea id="codesInput" rows="6"
+placeholder="الصق الأكواد هنا كل كود بسطر"></textarea>
+
+<div class="flex gap-3 flex-wrap">
+
+<button id="addCodes"
+class="bg-blue-600 hover:bg-blue-500">
+إضافة الأكواد
+</button>
+
+<button id="clearStock"
+class="bg-red-600">
+تصفير المخزون
+</button>
+
+<button id="importBtn"
+class="bg-gray-700">
+استيراد TXT
+</button>
+
+<input type="file" id="fileInput" accept=".txt" hidden>
+
+</div>
+
+</div>
+
+
+<div class="box w-full max-w-2xl space-y-4">
+
+<h2 class="text-xl">
+سحب كود
+</h2>
+
+<div class="flex gap-3">
+
+<button id="pullOne"
+class="bg-green-600">
+سحب كود واحد
+</button>
+
+<input id="bulkNumber"
+type="number"
+placeholder="عدد الأكواد"
+class="text-black px-2 rounded">
+
+<button id="pullBulk"
+class="bg-purple-600">
+سحب بالجملة
+</button>
+
+</div>
+
+<a href="https://node-card.com/"
+target="_blank"
+class="text-red-500 font-bold">
+الرابط
+</a>
+
+</div>
+
+
+<div class="box w-full max-w-2xl">
+
+<h2 class="text-xl mb-3">
+النتيجة
+</h2>
+
+<textarea id="result" rows="8"></textarea>
+
+</div>
+
+
+<div class="box w-full max-w-2xl flex justify-between">
+
+<div>
+المتوفر:
+<span id="stockCount">0</span>
+</div>
+
+<div>
+المسحوب:
+<span id="pulledCount">0</span>
+</div>
+
+</div>
+
+
+<script>
+
+let stock = JSON.parse(localStorage.getItem("codes_stock") || "[]")
+let pulled = Number(localStorage.getItem("codes_pulled") || 0)
+
+const stockCount=document.getElementById("stockCount")
+const pulledCount=document.getElementById("pulledCount")
+const result=document.getElementById("result")
+
+function updateUI(){
+
+stockCount.textContent=stock.length
+pulledCount.textContent=pulled
+
+localStorage.setItem("codes_stock",JSON.stringify(stock))
+localStorage.setItem("codes_pulled",pulled)
+
+}
+
+updateUI()
+
+// إضافة الأكواد
+document.getElementById("addCodes").onclick=()=>{
+
+let input=document.getElementById("codesInput").value
+
+let lines=input.split("\n")
+
+let added=0
+
+lines.forEach(l=>{
+
+let code=l.trim()
+
+if(code.length>5){
+
+stock.push(code)
+
+added++
+
+}
+
+})
+
+document.getElementById("codesInput").value=""
+
+updateUI()
+
+alert("تم إضافة "+added+" كود")
+
+}
+
+
+// تصفير
+document.getElementById("clearStock").onclick=()=>{
+
+if(!confirm("حذف المخزون؟"))return
+
+stock=[]
+pulled=0
+
+updateUI()
+
+}
+
+
+// سحب كود واحد
+document.getElementById("pullOne").onclick=()=>{
+
+if(stock.length==0){
+
+alert("المخزون فارغ")
+
+return
+
+}
+
+let code=stock.shift()
+
+pulled++
+
+result.value=code
+
+updateUI()
+
+}
+
+
+// سحب بالجملة
+document.getElementById("pullBulk").onclick=()=>{
+
+let num=Number(document.getElementById("bulkNumber").value)
+
+if(!num||num<1)return
+
+if(stock.length==0){
+
+alert("المخزون فارغ")
+
+return
+
+}
+
+let list=[]
+
+for(let i=0;i<num;i++){
+
+if(stock.length==0)break
+
+list.push(stock.shift())
+
+pulled++
+
+}
+
+result.value=list.join("\n")
+
+updateUI()
+
+}
+
+
+// استيراد ملف
+document.getElementById("importBtn").onclick=()=>{
+
+document.getElementById("fileInput").click()
+
+}
+
+document.getElementById("fileInput").onchange=async(e)=>{
+
+let file=e.target.files[0]
+
+if(!file)return
+
+let text=await file.text()
+
+let lines=text.split("\n")
+
+lines.forEach(l=>{
+
+let code=l.trim()
+
+if(code.length>5){
+
+stock.push(code)
+
+}
+
+})
+
+updateUI()
+
+}
+
+</script>
+
+</body>
+</html>
