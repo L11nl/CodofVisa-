@@ -51,8 +51,10 @@ padding:10px;
 }
 
 .resultActive{
-background:#e5e7eb;
-color:#111;
+background:#f3f4f6;
+color:#000;
+font-family:monospace;
+font-size:14px;
 }
 
 .btn3d{
@@ -206,7 +208,6 @@ updateUI()
 
 
 
-// اظهار التغذية
 let feedTimer=null
 
 document.getElementById("toggleFeed").onclick=()=>{
@@ -250,8 +251,6 @@ document.getElementById("codesInput").value=""
 
 updateUI()
 
-alert("تمت الإضافة")
-
 }
 
 
@@ -267,7 +266,6 @@ pulled=0
 updateUI()
 
 result.value=""
-
 copyBtn.classList.add("hidden")
 
 }
@@ -311,8 +309,6 @@ updateUI()
 document.getElementById("pullOne").onclick=()=>{
 
 if(stock.length==0){
-
-alert("المخزون فارغ")
 
 return
 
@@ -376,12 +372,20 @@ updateUI()
 
 
 
-// نسخ
+// النسخ بدون نافذة
 copyBtn.onclick=()=>{
 
 navigator.clipboard.writeText(result.value)
 
-alert("تم النسخ")
+copyBtn.textContent="تم النسخ ✓"
+
+setTimeout(()=>{
+
+copyBtn.textContent = result.value.includes("\n")
+? "نسخ الأكواد"
+: "نسخ الكود"
+
+},1500)
 
 }
 
