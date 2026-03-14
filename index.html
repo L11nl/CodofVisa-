@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>مخزون الأكواد</title>
+<title>مدير مخزون الأكواد</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -17,7 +17,6 @@ body{
 font-family:'Cairo',sans-serif;
 background:linear-gradient(135deg,#020617,#0f172a);
 color:white;
-min-height:100vh;
 display:flex;
 flex-direction:column;
 align-items:center;
@@ -25,50 +24,40 @@ padding:20px;
 }
 
 .card{
-background:rgba(15,23,42,0.7);
-backdrop-filter:blur(10px);
-border-radius:20px;
-padding:20px;
-box-shadow:0 10px 30px rgba(0,0,0,0.6);
+background:rgba(15,23,42,0.8);
+border-radius:16px;
+padding:18px;
 width:100%;
 max-width:500px;
-margin-bottom:20px;
+margin-bottom:16px;
+box-shadow:0 10px 30px rgba(0,0,0,.6);
 }
 
 textarea{
 width:100%;
-background:#020617;
+border-radius:10px;
+padding:10px;
 border:1px solid #334155;
-border-radius:12px;
-padding:10px;
-color:white;
-}
-
-.resultBox{
-background:#020617;
-border-radius:12px;
-padding:10px;
 }
 
 .resultActive{
-background:#f3f4f6;
-color:#000;
+background:#2563eb;
+color:white;
 font-family:monospace;
+}
+
+.btn{
+padding:8px 10px;
+border-radius:8px;
 font-size:14px;
-}
-
-.btn3d{
-border-radius:12px;
-padding:12px;
 font-weight:bold;
-width:100%;
-transition:all .15s;
-box-shadow:0 6px 0 rgba(0,0,0,.4);
+box-shadow:0 4px 0 rgba(0,0,0,.4);
+transition:.15s;
 }
 
-.btn3d:active{
-transform:translateY(4px);
-box-shadow:0 2px 0 rgba(0,0,0,.4);
+.btn:active{
+transform:translateY(3px);
+box-shadow:0 1px 0 rgba(0,0,0,.4);
 }
 
 </style>
@@ -77,88 +66,92 @@ box-shadow:0 2px 0 rgba(0,0,0,.4);
 
 <body>
 
-<h1 class="text-3xl font-bold text-blue-400 mb-6">
+<h1 class="text-2xl font-bold text-blue-400 mb-4">
 مدير مخزون الأكواد
 </h1>
 
 
-<button id="toggleFeed" class="btn3d bg-blue-600 mb-4">
+<button id="toggleFeed" class="btn bg-blue-600 mb-3 w-full">
 تغذية الأكواد
 </button>
 
 
 <div id="feedBox" class="card hidden">
 
-<textarea id="codesInput" rows="6"
-placeholder="الصق الأكواد هنا"></textarea>
+<textarea id="codesInput" rows="5" placeholder="الصق الأكواد"></textarea>
 
-<button id="addCodes"
-class="btn3d bg-green-600 mt-3">
+<button id="addCodes" class="btn bg-green-600 mt-2 w-full">
 إضافة الأكواد
 </button>
 
-<button id="importBtn"
-class="btn3d bg-gray-700 mt-2">
+<button id="importBtn" class="btn bg-gray-600 mt-2 w-full">
 استيراد TXT
 </button>
 
-<button id="clearStock"
-class="btn3d bg-red-600 mt-2">
+<button id="clearStock" class="btn bg-red-600 mt-2 w-full">
 تصفير المخزون
 </button>
 
-<input type="file" id="fileInput" hidden accept=".txt">
+<input type="file" id="fileInput" hidden>
 
 </div>
-
 
 
 <div class="card">
 
-<button id="pullOne"
-class="btn3d bg-green-600 mb-3">
+<button id="pullOne" class="btn bg-green-600 w-full mb-2">
 سحب كود
 </button>
 
-<button id="showBulk"
-class="btn3d bg-purple-600">
-سحب بالجملة
+<button id="restoreBtn" class="btn bg-yellow-500 w-full mb-2">
+استرداد الكود
 </button>
-
-<div id="bulkBox" class="hidden mt-3">
-
-<input
-id="bulkNumber"
-type="number"
-placeholder="عدد الأكواد"
-class="w-full text-black rounded p-2 mb-2">
-
-<button id="pullBulk"
-class="btn3d bg-purple-700">
-سحب
-</button>
-
-</div>
 
 <a href="https://node-card.com/"
 target="_blank"
-class="block mt-5 text-center text-red-500 text-lg font-bold">
+class="block text-center text-red-500 font-bold mt-3">
 الرابط
 </a>
 
 </div>
 
 
+<div class="card">
+
+<textarea id="result" rows="4"></textarea>
+
+<button id="copyBtn"
+class="btn bg-blue-600 mt-2 hidden w-full">
+نسخ
+</button>
+
+</div>
+
 
 <div class="card">
 
-<div id="resultBox" class="resultBox">
+<h2 class="mb-2">الأكواد المسحوبة</h2>
 
-<textarea id="result" rows="6"></textarea>
+<div id="pulledList" class="text-sm space-y-1 max-h-32 overflow-y-auto"></div>
 
-<button id="copyBtn"
-class="btn3d bg-blue-600 mt-2 hidden">
-نسخ
+</div>
+
+
+<div class="card">
+
+<button id="showBulk" class="btn bg-purple-600 w-full mb-2">
+سحب بالجملة
+</button>
+
+<div id="bulkBox" class="hidden">
+
+<input id="bulkNumber" type="number"
+placeholder="عدد الأكواد"
+class="w-full text-black p-2 rounded mb-2">
+
+<button id="pullBulk"
+class="btn bg-purple-700 w-full">
+سحب
 </button>
 
 </div>
@@ -166,8 +159,7 @@ class="btn3d bg-blue-600 mt-2 hidden">
 </div>
 
 
-
-<div class="card flex justify-between text-lg">
+<div class="card flex justify-between text-sm">
 
 <div>
 المخزون
@@ -182,72 +174,111 @@ class="btn3d bg-blue-600 mt-2 hidden">
 </div>
 
 
-
 <script>
 
-let stock = JSON.parse(localStorage.getItem("codes_stock") || "[]")
-let pulled = Number(localStorage.getItem("codes_pulled") || 0)
+let stock = JSON.parse(localStorage.getItem("codes_stock")||"[]")
+let pulled = JSON.parse(localStorage.getItem("codes_pulled_list")||"[]")
+let pulledCounter = Number(localStorage.getItem("codes_pulled")||0)
 
 const stockCount=document.getElementById("stockCount")
 const pulledCount=document.getElementById("pulledCount")
+const pulledList=document.getElementById("pulledList")
 const result=document.getElementById("result")
 const copyBtn=document.getElementById("copyBtn")
-const resultBox=document.getElementById("resultBox")
+
+function save(){
+
+localStorage.setItem("codes_stock",JSON.stringify(stock))
+localStorage.setItem("codes_pulled_list",JSON.stringify(pulled))
+localStorage.setItem("codes_pulled",pulledCounter)
+
+}
 
 function updateUI(){
 
 stockCount.textContent=stock.length
-pulledCount.textContent=pulled
+pulledCount.textContent=pulledCounter
 
-localStorage.setItem("codes_stock",JSON.stringify(stock))
-localStorage.setItem("codes_pulled",pulled)
+pulledList.innerHTML=""
+
+pulled.slice().reverse().forEach((c,i)=>{
+
+let div=document.createElement("div")
+
+div.className="flex justify-between"
+
+div.innerHTML=`
+<span>${c}</span>
+<button onclick="restoreFromList('${c}')"
+class="text-yellow-400 text-xs">
+استرجاع
+</button>
+`
+
+pulledList.appendChild(div)
+
+})
+
+save()
 
 }
 
 updateUI()
 
 
+// اظهار التغذية
 
-let feedTimer=null
+let timer=null
 
-document.getElementById("toggleFeed").onclick=()=>{
+toggleFeed.onclick=()=>{
 
-const box=document.getElementById("feedBox")
+feedBox.classList.remove("hidden")
 
-box.classList.remove("hidden")
+clearTimeout(timer)
 
-clearTimeout(feedTimer)
-
-feedTimer=setTimeout(()=>{
-
-box.classList.add("hidden")
-
+timer=setTimeout(()=>{
+feedBox.classList.add("hidden")
 },180000)
 
 }
 
 
 
-// إضافة الأكواد
-document.getElementById("addCodes").onclick=()=>{
+// إضافة
 
-let input=document.getElementById("codesInput").value
+addCodes.onclick=()=>{
+
+let input=codesInput.value
 
 let codes=input.split(/\s+/)
 
 codes.forEach(c=>{
 
-let code=c.trim()
-
-if(code.length>10){
-
-stock.push(code)
-
-}
+if(c.length>10) stock.push(c)
 
 })
 
-document.getElementById("codesInput").value=""
+codesInput.value=""
+
+updateUI()
+
+}
+
+
+
+// استيراد
+
+importBtn.onclick=()=>fileInput.click()
+
+fileInput.onchange=async(e)=>{
+
+let text=await e.target.files[0].text()
+
+let codes=text.split(/\s+/)
+
+codes.forEach(c=>{
+if(c.length>10) stock.push(c)
+})
 
 updateUI()
 
@@ -256,48 +287,18 @@ updateUI()
 
 
 // تصفير
-document.getElementById("clearStock").onclick=()=>{
 
-if(!confirm("هل تريد تصفير المخزون؟"))return
+clearStock.onclick=()=>{
+
+if(!confirm("تصفير المخزون؟")) return
 
 stock=[]
-pulled=0
-
-updateUI()
+pulled=[]
+pulledCounter=0
 
 result.value=""
+
 copyBtn.classList.add("hidden")
-
-}
-
-
-
-// استيراد TXT
-document.getElementById("importBtn").onclick=()=>{
-
-document.getElementById("fileInput").click()
-
-}
-
-document.getElementById("fileInput").onchange=async(e)=>{
-
-let file=e.target.files[0]
-
-let text=await file.text()
-
-let codes=text.split(/\s+/)
-
-codes.forEach(c=>{
-
-let code=c.trim()
-
-if(code.length>10){
-
-stock.push(code)
-
-}
-
-})
 
 updateUI()
 
@@ -306,21 +307,20 @@ updateUI()
 
 
 // سحب كود
-document.getElementById("pullOne").onclick=()=>{
 
-if(stock.length==0){
+pullOne.onclick=()=>{
 
-return
-
-}
+if(stock.length==0) return
 
 let code=stock.shift()
 
-pulled++
+pulled.push(code)
+
+pulledCounter++
 
 result.value=code
 
-resultBox.classList.add("resultActive")
+result.classList.add("resultActive")
 
 copyBtn.textContent="نسخ الكود"
 copyBtn.classList.remove("hidden")
@@ -331,37 +331,69 @@ updateUI()
 
 
 
-// اظهار السحب بالجملة
-document.getElementById("showBulk").onclick=()=>{
+// استرداد آخر كود
 
-document.getElementById("bulkBox").classList.toggle("hidden")
+restoreBtn.onclick=()=>{
+
+let code=pulled.pop()
+
+if(!code) return
+
+stock.unshift(code)
+
+pulledCounter--
+
+updateUI()
+
+}
+
+
+
+// استرجاع من القائمة
+
+function restoreFromList(code){
+
+stock.unshift(code)
+
+pulled = pulled.filter(c=>c!==code)
+
+pulledCounter--
+
+updateUI()
 
 }
 
 
 
 // سحب بالجملة
-document.getElementById("pullBulk").onclick=()=>{
 
-let num=Number(document.getElementById("bulkNumber").value)
+showBulk.onclick=()=>bulkBox.classList.toggle("hidden")
 
-if(!num)return
+pullBulk.onclick=()=>{
+
+let num=Number(bulkNumber.value)
+
+if(!num) return
 
 let list=[]
 
 for(let i=0;i<num;i++){
 
-if(stock.length==0)break
+if(stock.length==0) break
 
-list.push((i+1)+"- "+stock.shift())
+let code=stock.shift()
 
-pulled++
+pulled.push(code)
+
+list.push((i+1)+"- "+code)
+
+pulledCounter++
 
 }
 
 result.value=list.join("\n")
 
-resultBox.classList.add("resultActive")
+result.classList.add("resultActive")
 
 copyBtn.textContent="نسخ الأكواد"
 copyBtn.classList.remove("hidden")
@@ -372,7 +404,8 @@ updateUI()
 
 
 
-// النسخ بدون نافذة
+// نسخ
+
 copyBtn.onclick=()=>{
 
 navigator.clipboard.writeText(result.value)
@@ -380,11 +413,9 @@ navigator.clipboard.writeText(result.value)
 copyBtn.textContent="تم النسخ ✓"
 
 setTimeout(()=>{
-
 copyBtn.textContent = result.value.includes("\n")
 ? "نسخ الأكواد"
 : "نسخ الكود"
-
 },1500)
 
 }
