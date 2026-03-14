@@ -29,7 +29,7 @@ background:rgba(15,23,42,0.7);
 backdrop-filter:blur(10px);
 border-radius:20px;
 padding:20px;
-box-shadow:0 10px 30px rgba(0,0,0,0.5);
+box-shadow:0 10px 30px rgba(0,0,0,0.6);
 width:100%;
 max-width:500px;
 margin-bottom:20px;
@@ -44,15 +44,29 @@ padding:10px;
 color:white;
 }
 
-button{
+.resultBox{
+background:#020617;
+border-radius:12px;
+padding:10px;
+}
+
+.resultActive{
+background:#e5e7eb;
+color:#111;
+}
+
+.btn3d{
 border-radius:12px;
 padding:12px;
 font-weight:bold;
 width:100%;
+transition:all .15s;
+box-shadow:0 6px 0 rgba(0,0,0,.4);
 }
 
-.glow{
-box-shadow:0 0 15px rgba(59,130,246,0.6);
+.btn3d:active{
+transform:translateY(4px);
+box-shadow:0 2px 0 rgba(0,0,0,.4);
 }
 
 </style>
@@ -66,8 +80,7 @@ box-shadow:0 0 15px rgba(59,130,246,0.6);
 </h1>
 
 
-<button id="toggleFeed"
-class="bg-blue-600 glow mb-4">
+<button id="toggleFeed" class="btn3d bg-blue-600 mb-4">
 تغذية الأكواد
 </button>
 
@@ -78,13 +91,18 @@ class="bg-blue-600 glow mb-4">
 placeholder="الصق الأكواد هنا"></textarea>
 
 <button id="addCodes"
-class="bg-green-600 mt-3 glow">
+class="btn3d bg-green-600 mt-3">
 إضافة الأكواد
 </button>
 
 <button id="importBtn"
-class="bg-gray-700 mt-2">
+class="btn3d bg-gray-700 mt-2">
 استيراد TXT
+</button>
+
+<button id="clearStock"
+class="btn3d bg-red-600 mt-2">
+تصفير المخزون
 </button>
 
 <input type="file" id="fileInput" hidden accept=".txt">
@@ -96,18 +114,12 @@ class="bg-gray-700 mt-2">
 <div class="card">
 
 <button id="pullOne"
-class="bg-green-600 glow mb-3">
+class="btn3d bg-green-600 mb-3">
 سحب كود
 </button>
 
-<button id="copyOne"
-class="bg-blue-600 mb-4 hidden">
-نسخ الكود
-</button>
-
-
 <button id="showBulk"
-class="bg-purple-600 glow">
+class="btn3d bg-purple-600">
 سحب بالجملة
 </button>
 
@@ -120,13 +132,8 @@ placeholder="عدد الأكواد"
 class="w-full text-black rounded p-2 mb-2">
 
 <button id="pullBulk"
-class="bg-purple-700">
+class="btn3d bg-purple-700">
 سحب
-</button>
-
-<button id="copyBulk"
-class="bg-blue-600 mt-2 hidden">
-نسخ الأكواد
 </button>
 
 </div>
@@ -143,7 +150,16 @@ class="block mt-5 text-center text-red-500 text-lg font-bold">
 
 <div class="card">
 
+<div id="resultBox" class="resultBox">
+
 <textarea id="result" rows="6"></textarea>
+
+<button id="copyBtn"
+class="btn3d bg-blue-600 mt-2 hidden">
+نسخ
+</button>
+
+</div>
 
 </div>
 
@@ -173,6 +189,8 @@ let pulled = Number(localStorage.getItem("codes_pulled") || 0)
 const stockCount=document.getElementById("stockCount")
 const pulledCount=document.getElementById("pulledCount")
 const result=document.getElementById("result")
+const copyBtn=document.getElementById("copyBtn")
+const resultBox=document.getElementById("resultBox")
 
 function updateUI(){
 
@@ -188,7 +206,7 @@ updateUI()
 
 
 
-// زر اظهار التغذية
+// اظهار التغذية
 let feedTimer=null
 
 document.getElementById("toggleFeed").onclick=()=>{
@@ -216,8 +234,6 @@ let input=document.getElementById("codesInput").value
 
 let codes=input.split(/\s+/)
 
-let added=0
-
 codes.forEach(c=>{
 
 let code=c.trim()
@@ -225,8 +241,6 @@ let code=c.trim()
 if(code.length>10){
 
 stock.push(code)
-
-added++
 
 }
 
@@ -236,7 +250,25 @@ document.getElementById("codesInput").value=""
 
 updateUI()
 
-alert("تم إضافة "+added+" كود")
+alert("تمت الإضافة")
+
+}
+
+
+
+// تصفير
+document.getElementById("clearStock").onclick=()=>{
+
+if(!confirm("هل تريد تصفير المخزون؟"))return
+
+stock=[]
+pulled=0
+
+updateUI()
+
+result.value=""
+
+copyBtn.classList.add("hidden")
 
 }
 
@@ -292,20 +324,12 @@ pulled++
 
 result.value=code
 
+resultBox.classList.add("resultActive")
+
+copyBtn.textContent="نسخ الكود"
+copyBtn.classList.remove("hidden")
+
 updateUI()
-
-document.getElementById("copyOne").classList.remove("hidden")
-
-}
-
-
-
-// نسخ كود
-document.getElementById("copyOne").onclick=()=>{
-
-navigator.clipboard.writeText(result.value)
-
-alert("تم النسخ")
 
 }
 
@@ -341,16 +365,19 @@ pulled++
 
 result.value=list.join("\n")
 
-updateUI()
+resultBox.classList.add("resultActive")
 
-document.getElementById("copyBulk").classList.remove("hidden")
+copyBtn.textContent="نسخ الأكواد"
+copyBtn.classList.remove("hidden")
+
+updateUI()
 
 }
 
 
 
-// نسخ بالجملة
-document.getElementById("copyBulk").onclick=()=>{
+// نسخ
+copyBtn.onclick=()=>{
 
 navigator.clipboard.writeText(result.value)
 
