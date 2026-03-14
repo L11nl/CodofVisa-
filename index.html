@@ -1,133 +1,150 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>مخزون الأكواد</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
-<style>
-body{
-background:#0b1224;
-color:white;
-font-family:sans-serif;
-}
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 
-.box{
-background:#111827;
-border:1px solid #1f2937;
-border-radius:15px;
+<style>
+
+body{
+font-family:'Cairo',sans-serif;
+background:linear-gradient(135deg,#020617,#0f172a);
+color:white;
+min-height:100vh;
+display:flex;
+flex-direction:column;
+align-items:center;
 padding:20px;
 }
 
+.card{
+background:rgba(15,23,42,0.7);
+backdrop-filter:blur(10px);
+border-radius:20px;
+padding:20px;
+box-shadow:
+0 10px 30px rgba(0,0,0,0.5),
+inset 0 1px 0 rgba(255,255,255,0.05);
+width:100%;
+max-width:500px;
+margin-bottom:20px;
+}
+
 textarea{
+width:100%;
 background:#020617;
 border:1px solid #334155;
-border-radius:10px;
+border-radius:12px;
 padding:10px;
-width:100%;
+color:white;
 }
 
 button{
-padding:10px 20px;
-border-radius:10px;
+border-radius:12px;
+padding:12px;
 font-weight:bold;
+width:100%;
+}
+
+.glow{
+box-shadow:0 0 15px rgba(59,130,246,0.6);
 }
 
 </style>
+
 </head>
 
-<body class="p-8 flex flex-col items-center gap-6">
+<body>
 
-<h1 class="text-3xl font-bold text-blue-400">
+<h1 class="text-3xl font-bold text-blue-400 mb-6">
 مدير مخزون الأكواد
 </h1>
 
-<div class="box w-full max-w-2xl space-y-4">
+<div class="card">
 
-<h2 class="text-xl">تغذية المخزون</h2>
+<h2 class="mb-3 text-lg">تغذية الأكواد</h2>
 
 <textarea id="codesInput" rows="6"
-placeholder="الصق الأكواد هنا كل كود بسطر"></textarea>
+placeholder="الصق الأكواد هنا"></textarea>
 
-<div class="flex gap-3 flex-wrap">
+<div class="flex gap-2 mt-3">
 
 <button id="addCodes"
-class="bg-blue-600 hover:bg-blue-500">
-إضافة الأكواد
+class="bg-blue-600 hover:bg-blue-500 glow">
+إضافة
 </button>
 
 <button id="clearStock"
 class="bg-red-600">
-تصفير المخزون
+تصفير
 </button>
 
-<button id="importBtn"
-class="bg-gray-700">
-استيراد TXT
-</button>
+</div>
 
 <input type="file" id="fileInput" accept=".txt" hidden>
 
-</div>
-
-</div>
-
-
-<div class="box w-full max-w-2xl space-y-4">
-
-<h2 class="text-xl">
-سحب كود
-</h2>
-
-<div class="flex gap-3">
-
-<button id="pullOne"
-class="bg-green-600">
-سحب كود واحد
+<button id="importBtn"
+class="bg-gray-700 mt-3">
+استيراد TXT
 </button>
 
-<input id="bulkNumber"
+</div>
+
+
+<div class="card">
+
+<h2 class="text-lg mb-3">سحب الأكواد</h2>
+
+<button id="pullOne"
+class="bg-green-600 mb-3 glow">
+سحب كود
+</button>
+
+<input
+id="bulkNumber"
 type="number"
 placeholder="عدد الأكواد"
-class="text-black px-2 rounded">
+class="w-full text-black rounded p-2 mb-2">
 
 <button id="pullBulk"
-class="bg-purple-600">
+class="bg-purple-600 glow">
 سحب بالجملة
 </button>
 
-</div>
-
 <a href="https://node-card.com/"
 target="_blank"
-class="text-red-500 font-bold">
+class="block mt-4 text-center text-red-500 text-lg font-bold">
 الرابط
 </a>
 
 </div>
 
 
-<div class="box w-full max-w-2xl">
+<div class="card">
 
-<h2 class="text-xl mb-3">
-النتيجة
-</h2>
+<h2 class="mb-3">النتيجة</h2>
 
-<textarea id="result" rows="8"></textarea>
+<textarea id="result" rows="6"></textarea>
 
 </div>
 
 
-<div class="box w-full max-w-2xl flex justify-between">
+<div class="card flex justify-between text-lg">
 
 <div>
-المتوفر:
+المخزون
 <span id="stockCount">0</span>
 </div>
 
 <div>
-المسحوب:
+المسحوب
 <span id="pulledCount">0</span>
 </div>
 
@@ -155,20 +172,22 @@ localStorage.setItem("codes_pulled",pulled)
 
 updateUI()
 
+
 // إضافة الأكواد
 document.getElementById("addCodes").onclick=()=>{
 
 let input=document.getElementById("codesInput").value
 
-let lines=input.split("\n")
+// تقسيم بالكلمة أو السطر
+let codes=input.split(/\s+/)
 
 let added=0
 
-lines.forEach(l=>{
+codes.forEach(c=>{
 
-let code=l.trim()
+let code=c.trim()
 
-if(code.length>5){
+if(code.length>10){
 
 stock.push(code)
 
@@ -187,6 +206,7 @@ alert("تم إضافة "+added+" كود")
 }
 
 
+
 // تصفير
 document.getElementById("clearStock").onclick=()=>{
 
@@ -200,7 +220,8 @@ updateUI()
 }
 
 
-// سحب كود واحد
+
+// سحب كود
 document.getElementById("pullOne").onclick=()=>{
 
 if(stock.length==0){
@@ -222,20 +243,13 @@ updateUI()
 }
 
 
+
 // سحب بالجملة
 document.getElementById("pullBulk").onclick=()=>{
 
 let num=Number(document.getElementById("bulkNumber").value)
 
-if(!num||num<1)return
-
-if(stock.length==0){
-
-alert("المخزون فارغ")
-
-return
-
-}
+if(!num)return
 
 let list=[]
 
@@ -256,7 +270,8 @@ updateUI()
 }
 
 
-// استيراد ملف
+
+// استيراد TXT
 document.getElementById("importBtn").onclick=()=>{
 
 document.getElementById("fileInput").click()
@@ -267,17 +282,15 @@ document.getElementById("fileInput").onchange=async(e)=>{
 
 let file=e.target.files[0]
 
-if(!file)return
-
 let text=await file.text()
 
-let lines=text.split("\n")
+let codes=text.split(/\s+/)
 
-lines.forEach(l=>{
+codes.forEach(c=>{
 
-let code=l.trim()
+let code=c.trim()
 
-if(code.length>5){
+if(code.length>10){
 
 stock.push(code)
 
