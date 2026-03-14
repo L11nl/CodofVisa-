@@ -29,9 +29,7 @@ background:rgba(15,23,42,0.7);
 backdrop-filter:blur(10px);
 border-radius:20px;
 padding:20px;
-box-shadow:
-0 10px 30px rgba(0,0,0,0.5),
-inset 0 1px 0 rgba(255,255,255,0.05);
+box-shadow:0 10px 30px rgba(0,0,0,0.5);
 width:100%;
 max-width:500px;
 margin-bottom:20px;
@@ -67,45 +65,53 @@ box-shadow:0 0 15px rgba(59,130,246,0.6);
 مدير مخزون الأكواد
 </h1>
 
-<div class="card">
 
-<h2 class="mb-3 text-lg">تغذية الأكواد</h2>
+<button id="toggleFeed"
+class="bg-blue-600 glow mb-4">
+تغذية الأكواد
+</button>
+
+
+<div id="feedBox" class="card hidden">
 
 <textarea id="codesInput" rows="6"
 placeholder="الصق الأكواد هنا"></textarea>
 
-<div class="flex gap-2 mt-3">
-
 <button id="addCodes"
-class="bg-blue-600 hover:bg-blue-500 glow">
-إضافة
+class="bg-green-600 mt-3 glow">
+إضافة الأكواد
 </button>
-
-<button id="clearStock"
-class="bg-red-600">
-تصفير
-</button>
-
-</div>
-
-<input type="file" id="fileInput" accept=".txt" hidden>
 
 <button id="importBtn"
-class="bg-gray-700 mt-3">
+class="bg-gray-700 mt-2">
 استيراد TXT
 </button>
 
+<input type="file" id="fileInput" hidden accept=".txt">
+
 </div>
+
 
 
 <div class="card">
 
-<h2 class="text-lg mb-3">سحب الأكواد</h2>
-
 <button id="pullOne"
-class="bg-green-600 mb-3 glow">
+class="bg-green-600 glow mb-3">
 سحب كود
 </button>
+
+<button id="copyOne"
+class="bg-blue-600 mb-4 hidden">
+نسخ الكود
+</button>
+
+
+<button id="showBulk"
+class="bg-purple-600 glow">
+سحب بالجملة
+</button>
+
+<div id="bulkBox" class="hidden mt-3">
 
 <input
 id="bulkNumber"
@@ -114,26 +120,33 @@ placeholder="عدد الأكواد"
 class="w-full text-black rounded p-2 mb-2">
 
 <button id="pullBulk"
-class="bg-purple-600 glow">
-سحب بالجملة
+class="bg-purple-700">
+سحب
 </button>
+
+<button id="copyBulk"
+class="bg-blue-600 mt-2 hidden">
+نسخ الأكواد
+</button>
+
+</div>
 
 <a href="https://node-card.com/"
 target="_blank"
-class="block mt-4 text-center text-red-500 text-lg font-bold">
+class="block mt-5 text-center text-red-500 text-lg font-bold">
 الرابط
 </a>
 
 </div>
 
 
-<div class="card">
 
-<h2 class="mb-3">النتيجة</h2>
+<div class="card">
 
 <textarea id="result" rows="6"></textarea>
 
 </div>
+
 
 
 <div class="card flex justify-between text-lg">
@@ -149,6 +162,7 @@ class="block mt-4 text-center text-red-500 text-lg font-bold">
 </div>
 
 </div>
+
 
 
 <script>
@@ -173,12 +187,33 @@ localStorage.setItem("codes_pulled",pulled)
 updateUI()
 
 
+
+// زر اظهار التغذية
+let feedTimer=null
+
+document.getElementById("toggleFeed").onclick=()=>{
+
+const box=document.getElementById("feedBox")
+
+box.classList.remove("hidden")
+
+clearTimeout(feedTimer)
+
+feedTimer=setTimeout(()=>{
+
+box.classList.add("hidden")
+
+},180000)
+
+}
+
+
+
 // إضافة الأكواد
 document.getElementById("addCodes").onclick=()=>{
 
 let input=document.getElementById("codesInput").value
 
-// تقسيم بالكلمة أو السطر
 let codes=input.split(/\s+/)
 
 let added=0
@@ -202,70 +237,6 @@ document.getElementById("codesInput").value=""
 updateUI()
 
 alert("تم إضافة "+added+" كود")
-
-}
-
-
-
-// تصفير
-document.getElementById("clearStock").onclick=()=>{
-
-if(!confirm("حذف المخزون؟"))return
-
-stock=[]
-pulled=0
-
-updateUI()
-
-}
-
-
-
-// سحب كود
-document.getElementById("pullOne").onclick=()=>{
-
-if(stock.length==0){
-
-alert("المخزون فارغ")
-
-return
-
-}
-
-let code=stock.shift()
-
-pulled++
-
-result.value=code
-
-updateUI()
-
-}
-
-
-
-// سحب بالجملة
-document.getElementById("pullBulk").onclick=()=>{
-
-let num=Number(document.getElementById("bulkNumber").value)
-
-if(!num)return
-
-let list=[]
-
-for(let i=0;i<num;i++){
-
-if(stock.length==0)break
-
-list.push(stock.shift())
-
-pulled++
-
-}
-
-result.value=list.join("\n")
-
-updateUI()
 
 }
 
@@ -299,6 +270,91 @@ stock.push(code)
 })
 
 updateUI()
+
+}
+
+
+
+// سحب كود
+document.getElementById("pullOne").onclick=()=>{
+
+if(stock.length==0){
+
+alert("المخزون فارغ")
+
+return
+
+}
+
+let code=stock.shift()
+
+pulled++
+
+result.value=code
+
+updateUI()
+
+document.getElementById("copyOne").classList.remove("hidden")
+
+}
+
+
+
+// نسخ كود
+document.getElementById("copyOne").onclick=()=>{
+
+navigator.clipboard.writeText(result.value)
+
+alert("تم النسخ")
+
+}
+
+
+
+// اظهار السحب بالجملة
+document.getElementById("showBulk").onclick=()=>{
+
+document.getElementById("bulkBox").classList.toggle("hidden")
+
+}
+
+
+
+// سحب بالجملة
+document.getElementById("pullBulk").onclick=()=>{
+
+let num=Number(document.getElementById("bulkNumber").value)
+
+if(!num)return
+
+let list=[]
+
+for(let i=0;i<num;i++){
+
+if(stock.length==0)break
+
+list.push((i+1)+"- "+stock.shift())
+
+pulled++
+
+}
+
+result.value=list.join("\n")
+
+updateUI()
+
+document.getElementById("copyBulk").classList.remove("hidden")
+
+}
+
+
+
+// نسخ بالجملة
+document.getElementById("copyBulk").onclick=()=>{
+
+navigator.clipboard.writeText(result.value)
+
+alert("تم النسخ")
 
 }
 
